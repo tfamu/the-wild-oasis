@@ -1,5 +1,10 @@
 import styled, { css } from "styled-components";
 
+interface ButtonProps {
+  variation?: "primary" | "secondary" | "danger";
+  size?: "small" | "medium" | "large";
+}
+
 const sizes = {
   small: css`
     font-size: 1.2rem;
@@ -47,3 +52,24 @@ const variations = {
     }
   `,
 };
+
+const Button = styled.button<ButtonProps>`
+  border: none;
+  border-radius: var(--border-radius-sm);
+  box-shadow: var(--shadow-sm);
+  ${(props) => props.size && sizes[props.size]}
+  ${(props) => props.variation && variations[props.variation]} /*
+  & is select this element in scss
+  
+  */  
+  /* &:hover {
+    background-color: var(--color-brand-700);
+  } */
+`;
+
+Button.defaultProps = {
+  size: "medium",
+  variation: "primary",
+};
+
+export default Button;
