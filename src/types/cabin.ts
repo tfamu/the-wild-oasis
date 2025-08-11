@@ -4,6 +4,7 @@ export interface cabin {
   maxCapacity: number;
   regularPrice: number;
   discount: number;
-  image: string;
+  image?: string;
+  imageFile?: File;
   description: string;
 }

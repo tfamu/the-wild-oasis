@@ -1,21 +1,32 @@
-import supabase from "./supabase"
+import type { cabin } from "../types/cabin";
+import { createNewData, deleteData, getAll, uploadImage } from "./apiCore";
 
-export async function getCabins<T>() {
-    const { data, error } = await supabase
-        .from('cabin')
-        .select('*')
-    if (error) {
-        console.error('Cabins could not be loaded')
-        throw new Error("Cabins could not be loaded")
-    }
+const MODEL_NAME = "cabin";
 
-    return data as T
+export async function getCabins() {
+  return await getAll<cabin>(MODEL_NAME);
+}
+
+export async function createNewCabin(newCabin: cabin): Promise<cabin> {
+  const { imageFile, ...cabinData } = newCabin;
+
+  const { imagePath, error: imgUploadErr } = await uploadImage(
+    "cabin-images",
+    imageFile
+  );
+
+  if (imgUploadErr) {
+    console.error(imgUploadErr);
+    throw new Error(imgUploadErr);
+  }
+
+  const res = await createNewData(MODEL_NAME, {
+    ...cabinData,
+    image: imagePath,
+  } as cabin);
+  return res.data[0];
 }
 
 export async function deleteCabin(id: number) {
-  const { error } = await supabase.from("cabin").delete().eq("id", id);
-
-  if (error) {
-    console.error("Cabins could not be deleted");
-  }
+  await deleteData(MODEL_NAME, id);
 }
