@@ -26,6 +26,26 @@ export async function createNewData<T>(modelName: string, newValues: T): Promise
   return { data }
 }
 
+export async function modifyData<T>(
+  modelName: string,
+  modifyValue: T,
+  id: number
+): Promise<{ data: T[]; error?: string }> {
+  const { data, error } = await supabase
+    .from(modelName)
+    .update(modifyValue)
+    .eq("id", id)
+    .select();
+
+  if (error) {
+    const errMsg = `${modelName} could not be edited`;
+    console.error(errMsg);
+    throw new Error(errMsg);
+  }
+
+  return { data };
+}
+
 export async function deleteData(modelName: string, id: number) {
   const { error } = await supabase.from(modelName).delete().eq("id", id);
 
