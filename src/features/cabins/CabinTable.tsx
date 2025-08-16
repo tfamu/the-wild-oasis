@@ -5,6 +5,7 @@ import Spinner from "../../ui/Spinner";
 import CabinRow from "./CabinRow";
 import type { cabin } from "../../types/cabin";
 import { TwoConstants } from "../../constants/twoConstants";
+import { useCabins } from "../../hooks/cabins/useCabins";
 
 const Table = styled.div`
   border: 1px solid var(--color-grey-200);
@@ -30,17 +31,8 @@ const TableHeader = styled.header`
   padding: 1.6rem 2.4rem;
 `;
 
-// queryKey is using to identify query, save to cache
-// queryFn is using for async function
 const CabinTable = () => {
-  const {
-    data: cabins,
-    isLoading,
-    error,
-  } = useQuery<cabin[]>({
-    queryKey: [TwoConstants.QUERIES_KEY.CABIN],
-    queryFn: getCabins,
-  });
+  const { isLoading, cabins } = useCabins();
 
   if (isLoading) return <Spinner />;
 

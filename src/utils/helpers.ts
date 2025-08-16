@@ -35,7 +35,8 @@ export const formatCurrency = (value: number) =>
     value
   );
 
-export const formatJPY = (value: number): string => {
+export const formatJPY = (value?: number): string => {
+  if (!value) return "";
   return new Intl.NumberFormat("ja-JP", {
     style: "currency",
     currency: "JPY",

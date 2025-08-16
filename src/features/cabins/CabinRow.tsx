@@ -1,12 +1,9 @@
 import styled from "styled-components";
 import type { cabin } from "../../types/cabin";
 import { formatJPY } from "../../utils/helpers";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteCabin } from "../../services/apiCabins";
-import { TwoConstants } from "../../constants/twoConstants";
-import toast from "react-hot-toast";
 import { useState } from "react";
 import CreateCabinForm from "./CreateCabinForm";
+import { useDeleteCabin } from "../../hooks/cabins/useDeleteCabinHook";
 
 const TableRow = styled.div`
   display: grid;
@@ -53,6 +50,7 @@ interface CabinRowProps {
 
 const CabinRow = ({ cabin }: CabinRowProps) => {
   const [showForm, setShowForm] = useState<boolean>(false);
+  const { isDeleting, mutateDeleteCabin } = useDeleteCabin();
 
   const {
     name,
@@ -63,24 +61,6 @@ const CabinRow = ({ cabin }: CabinRowProps) => {
     id: cabinId,
   } = cabin;
 
-  const queryClient = useQueryClient();
-
-  // mutate is using to make mutation to remote state
-  // by called mutation server api, then it do mutate the remote state also
-  // invalidateQueries is using to tell react-query that the queries is now invalidated
-  // those query is now possible to refetch, using especially after mutation success
-  // another benefit of using invalidateQueries is to sync between many tab, in the scenerio there are many reference at resource on same time from other device or browser
-  const { isPending: isDeleting, mutate } = useMutation({
-    mutationFn: deleteCabin,
-    onSuccess: () => {
-      toast.success("Cabin successfully deleted");
-      queryClient.invalidateQueries({
-        queryKey: [TwoConstants.QUERIES_KEY.CABIN],
-      });
-    },
-    onError: (err) => toast.error(err.message),
-  });
-
   return (
     <>
       <TableRow role="row">
@@ -88,10 +68,17 @@ const CabinRow = ({ cabin }: CabinRowProps) => {
         <Cabin>{name}</Cabin>
         <div>Fits up tp {maxCapacity}</div>
         <Price>{formatJPY(regularPrice)}</Price>
-        <Discount>{formatJPY(discount)}</Discount>
+        {discount ? (
+          <Discount>{formatJPY(discount)}</Discount>
+        ) : (
+          <span>&mdash;</span>
+        )}
         <div>
           <button onClick={() => setShowForm((show) => !show)}>Edit</button>
-          <button onClick={() => mutate(cabinId!)} disabled={isDeleting}>
+          <button
+            onClick={() => mutateDeleteCabin(cabinId!)}
+            disabled={isDeleting}
+          >
             delete
           </button>
         </div>
@@ -102,4 +89,3 @@ const CabinRow = ({ cabin }: CabinRowProps) => {
 };
 
 export default CabinRow;
-

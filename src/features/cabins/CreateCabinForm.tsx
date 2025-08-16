@@ -3,13 +3,16 @@ import Form from "../../ui/Form";
 import Button from "../../ui/Button";
 import FileInput from "../../ui/FileInput";
 import Textarea from "../../ui/Textarea";
-import { useForm } from "react-hook-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createNewCabin, editCabin } from "../../services/apiCabins";
+import {
+  useForm,
+  type SubmitErrorHandler,
+  type SubmitHandler,
+} from "react-hook-form";
 import toast from "react-hot-toast";
-import { TwoConstants } from "../../constants/twoConstants";
 import FormRow from "../../ui/FormRow";
 import type { cabin } from "../../types/cabin";
+import { useCreateCabin } from "../../hooks/cabins/useCreateCabin";
+import { useEditCabin } from "../../hooks/cabins/useEditCabin";
 
 type CreateCabinFormProps = {
   cabinToEdit?: cabin;
@@ -17,61 +20,56 @@ type CreateCabinFormProps = {
 
 function CreateCabinForm({ cabinToEdit = {} }: CreateCabinFormProps) {
   const { id: editId } = cabinToEdit;
-
   const isEditSession = !!editId;
 
-  const queryClient = useQueryClient();
   const { register, handleSubmit, reset, getValues, formState } = useForm({
     defaultValues: isEditSession ? cabinToEdit : {},
   });
+  // mutateCreateCabin is seemly independent function
+  // but this actually coming from mutate function of react-query
+  // defining it here is just pass value to react-query then trigger the mutation
+  const { isCreating, mutateCreateCabin } = useCreateCabin();
+  const { isEditing, mutateEditCabin } = useEditCabin();
   const { errors } = formState;
-
-  const { mutate: mutateCreateCabin, isPending: isCreating } = useMutation({
-    mutationFn: createNewCabin,
-    onSuccess: () => {
-      toast.success("New cabin successfully created");
-      queryClient.invalidateQueries({
-        queryKey: [TwoConstants.QUERIES_KEY.CABIN],
-      });
-      // only after cabin is actually created in database
-      // call the reset
-      reset();
-    },
-    onError: (err) => {
-      toast.error(err.message);
-    },
-  });
-
-  const { mutate: mutateEditCabin, isPending: isEditing } = useMutation({
-    mutationFn: editCabin,
-    onSuccess: () => {
-      toast.success("Cabin successfully Edited");
-      queryClient.invalidateQueries({
-        queryKey: [TwoConstants.QUERIES_KEY.CABIN],
-      });
-      // only after cabin is actually created in database
-      // call the reset
-      reset();
-    },
-    onError: (err) => {
-      toast.error(err.message);
-    },
-  });
 
   const isWorking = isCreating || isEditing;
 
-  const onSubmit = (data) => {
+  const onSubmit: SubmitHandler<cabin> = (data) => {
     console.log(data);
     if (isEditSession) {
       console.log("start editing cabin...");
-      mutateEditCabin({ ...data, imageFile: data.imageFile[0] });
+      mutateEditCabin(
+        {
+          ...data,
+          imageFile: (data.imageFile as FileList | undefined)?.[0],
+        },
+        {
+          onSuccess: (data) => {
+            console.log(data);
+            reset();
+          },
+        }
+      );
     } else {
       console.log("start creating new cabin...");
-      mutateCreateCabin({ ...data, imageFile: data.imageFile[0] });
+      mutateCreateCabin(
+        {
+          ...data,
+          imageFile: (data.imageFile as FileList | undefined)?.[0],
+        },
+        {
+          onSuccess: (data) => {
+            console.log(data);
+            reset();
+          },
+        }
+      );
     }
   };
 
-  const onError = (error) => {
+  const onError: SubmitErrorHandler<cabin> = (error) => {
+    console.log(error);
+
     toast.error(`there is invalid input`);
   };
   return (
@@ -152,7 +150,10 @@ function CreateCabinForm({ cabinToEdit = {} }: CreateCabinFormProps) {
         />
       </FormRow>
 
-      <FormRow label="Cabin photo">
+      <FormRow
+        label="Cabin photo"
+        error={errors?.imageFile?.message?.toString()}
+      >
         <FileInput
           id="imageFile"
           type="file"
