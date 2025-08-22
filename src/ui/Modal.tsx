@@ -1,3 +1,6 @@
+import type { ReactEventHandler, ReactNode } from "react";
+import { createPortal } from "react-dom";
+import { HiXMark } from "react-icons/hi2";
 import styled from "styled-components";
 
 const StyledModal = styled.div`
@@ -48,3 +51,31 @@ const Button = styled.button`
     color: var(--color-grey-500);
   }
 `;
+
+type ModalProps = {
+  children: ReactNode;
+  onClose: ReactEventHandler;
+};
+
+// createPortal help rendering jsx outside of DOM structure but keep the structure of react component
+// in order to keep state, prop passing...
+// reason why using portal is to avoid conflicting with overflow setting to hidden from parent
+
+const Modal = ({ children, onClose }: ModalProps) => {
+  return createPortal(
+    <Overlay>
+      <div>
+        <StyledModal>
+          <Button onClick={onClose}>
+            <HiXMark />
+          </Button>
+
+          <div>{children}</div>
+        </StyledModal>
+      </div>
+    </Overlay>,
+    document.body
+  );
+};
+
+export default Modal;

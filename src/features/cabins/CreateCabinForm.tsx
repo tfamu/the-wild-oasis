@@ -16,9 +16,13 @@ import { useEditCabin } from "../../hooks/cabins/useEditCabin";
 
 type CreateCabinFormProps = {
   cabinToEdit?: cabin;
+  onCloseModal?: () => void;
 };
 
-function CreateCabinForm({ cabinToEdit = {} }: CreateCabinFormProps) {
+function CreateCabinForm({
+  cabinToEdit = {},
+  onCloseModal,
+}: CreateCabinFormProps) {
   const { id: editId } = cabinToEdit;
   const isEditSession = !!editId;
 
@@ -47,6 +51,7 @@ function CreateCabinForm({ cabinToEdit = {} }: CreateCabinFormProps) {
           onSuccess: (data) => {
             console.log(data);
             reset();
+            onCloseModal?.();
           },
         }
       );
@@ -61,6 +66,7 @@ function CreateCabinForm({ cabinToEdit = {} }: CreateCabinFormProps) {
           onSuccess: (data) => {
             console.log(data);
             reset();
+            onCloseModal?.();
           },
         }
       );
@@ -73,7 +79,7 @@ function CreateCabinForm({ cabinToEdit = {} }: CreateCabinFormProps) {
     toast.error(`there is invalid input`);
   };
   return (
-    <Form onSubmit={handleSubmit(onSubmit, onError)}>
+    <Form onSubmit={handleSubmit(onSubmit, onError)} type={onCloseModal ? 'modal' : 'regular'}>
       <FormRow label="Cabin Name" error={errors?.name?.message?.toString()}>
         <Input
           type="text"
@@ -167,7 +173,12 @@ function CreateCabinForm({ cabinToEdit = {} }: CreateCabinFormProps) {
       <FormRow>
         {/* type is an HTML attribute! */}
         <>
-          <Button variation="secondary" size="small" type="reset">
+          <Button
+            variation="secondary"
+            size="small"
+            type="reset"
+            onClick={() => onCloseModal?.()}
+          >
             Cancel
           </Button>
           <Button variation="secondary" size="small" disabled={isWorking}>
