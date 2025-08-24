@@ -1,7 +1,15 @@
-import type { ReactEventHandler, ReactNode } from "react";
+import {
+  cloneElement,
+  createContext,
+  useContext,
+  useState,
+  type ReactElement,
+  type ReactNode,
+} from "react";
 import { createPortal } from "react-dom";
 import { HiXMark } from "react-icons/hi2";
 import styled from "styled-components";
+import { useOutsideClick } from "../hooks/commons/useOutsideClick";
 
 const StyledModal = styled.div`
   position: fixed;
@@ -52,30 +60,98 @@ const Button = styled.button`
   }
 `;
 
-type ModalProps = {
-  children: ReactNode;
-  onClose: ReactEventHandler;
-};
+interface ModalContextType {
+  openName: string;
+  close: () => void;
+  openWindow: (name: string) => void;
+}
+
+interface OpenProps {
+  children: ReactElement<{ onClick?: () => void }>;
+  opens: string;
+}
+
+interface WindowProps {
+  children: ReactElement<{ onCloseModal?: () => void }>;
+  name: string;
+}
 
 // createPortal help rendering jsx outside of DOM structure but keep the structure of react component
 // in order to keep state, prop passing...
 // reason why using portal is to avoid conflicting with overflow setting to hidden from parent
 
-const Modal = ({ children, onClose }: ModalProps) => {
+// compount component
+
+const ModalContext = createContext<ModalContextType | undefined>(undefined);
+
+const Modal = ({ children }: { children: ReactNode }) => {
+  const [openName, setOpenName] = useState<string>("");
+
+  const close = () => setOpenName("");
+  const openWindow = setOpenName;
+
+  return (
+    <ModalContext.Provider value={{ openName, close, openWindow }}>
+      {children}
+    </ModalContext.Provider>
+  );
+};
+
+const Open = ({ children, opens: opensWindowName }: OpenProps) => {
+  // beacause the concept of context API is not be able to use outside of context provider
+  // if context cant be retrieved, then throw error
+  const context = useContext(ModalContext);
+  if (!context) throw new Error("Modal.Open must be used within Modal");
+
+  return cloneElement(children, {
+    onClick: () => context.openWindow(opensWindowName),
+  });
+};
+
+const Window = ({ children, name }: WindowProps) => {
+  const context = useContext(ModalContext);
+  if (!context) throw new Error("Modal.Window must be used within Modal");
+  const { openName, close: closeModal } = context;
+
+  const { styledModalref } = useOutsideClick(closeModal);
+
+  if (name !== openName) return null;
+
   return createPortal(
     <Overlay>
       <div>
-        <StyledModal>
-          <Button onClick={onClose}>
+        <StyledModal ref={styledModalref}>
+          <Button onClick={closeModal}>
             <HiXMark />
           </Button>
 
-          <div>{children}</div>
+          <div>{cloneElement(children, { onCloseModal: closeModal })}</div>
         </StyledModal>
       </div>
     </Overlay>,
     document.body
   );
 };
+
+Modal.Open = Open;
+Modal.Window = Window;
+
+// normal component
+// const Modal = ({ children, onClose }: ModalProps) => {
+//   return createPortal(
+//     <Overlay>
+//       <div>
+//         <StyledModal>
+//           <Button onClick={onClose}>
+//             <HiXMark />
+//           </Button>
+
+//           <div>{children}</div>
+//         </StyledModal>
+//       </div>
+//     </Overlay>,
+//     document.body
+//   );
+// };
 
 export default Modal;
