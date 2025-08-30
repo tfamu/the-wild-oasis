@@ -1,6 +1,10 @@
+import { createContext, useContext, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
+import { HiEllipsisVertical } from "react-icons/hi2";
 import styled from "styled-components";
+import { useOutsideClick } from "../hooks/commons/useOutsideClick";
 
-const StyledMenu = styled.div`
+const Menu = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -25,7 +29,11 @@ const StyledToggle = styled.button`
   }
 `;
 
-const StyledList = styled.ul`
+interface PositionType {
+  x: number;
+  y: number;
+}
+const StyledList = styled.ul<{ position: PositionType }>`
   position: fixed;
 
   background-color: var(--color-grey-0);
@@ -60,3 +68,99 @@ const StyledButton = styled.button`
     transition: all 0.3s;
   }
 `;
+interface MenusContextType {
+  openId: string;
+  close: () => void;
+  open: (openId: string) => void;
+  position: PositionType;
+  setPosition: (position: PositionType) => void;
+}
+
+const MenusContext = createContext<MenusContextType | null>(null);
+
+const Menus = ({ children }: { children: ReactNode }) => {
+  const [openId, setOpenId] = useState<string>("");
+  const [position, setPosition] = useState<PositionType>({ x: 20, y: 20 });
+  const close = () => setOpenId("");
+  const open = setOpenId;
+  return (
+    <MenusContext.Provider
+      value={{ openId, close, open, position, setPosition }}
+    >
+      {children}
+    </MenusContext.Provider>
+  );
+};
+
+function Toggle({ id }: { id?: string }) {
+  const context = useContext(MenusContext);
+  if (!context) throw new Error("Menus.Toggle must be used within Modal");
+  const { openId, close, open, setPosition } = context;
+
+  const handleClick = (e: React.MouseEvent) => {
+    const rect = (e.target as Element)
+      .closest("button")!
+      .getBoundingClientRect();
+    setPosition({
+      x: window.innerWidth - rect.width - rect.x,
+      y: rect.y + rect.height + 8,
+    });
+    if (openId === "" || openId !== id) {
+      open?.(id || "");
+    } else {
+      close?.();
+    }
+  };
+
+  return (
+    <StyledToggle onClick={handleClick}>
+      <HiEllipsisVertical />
+    </StyledToggle>
+  );
+}
+function List({ id, children }: { id?: string; children: ReactNode }) {
+  const context = useContext(MenusContext);
+  if (!context) throw new Error("Menus.List must be used within Modal");
+  const { openId, position, close } = context;
+  const { styledModalref } = useOutsideClick<HTMLUListElement>(close);
+
+  if (openId !== id) return null;
+
+  return createPortal(
+    <StyledList position={position!} ref={styledModalref}>
+      {children}
+    </StyledList>,
+    document.body
+  );
+}
+
+interface ButtonProps {
+  children: ReactNode;
+  icon: ReactNode;
+  onClick?: () => void;
+}
+
+function Button({ children, icon, onClick }: ButtonProps) {
+  const context = useContext(MenusContext);
+  if (!context) throw new Error("Menus.Button must be used within Modal");
+  const { close } = context;
+
+  const handleClick = () => {
+    onClick?.();
+    close();
+  };
+  return (
+    <li>
+      <StyledButton onClick={handleClick}>
+        {icon}
+        <span>{children}</span>
+      </StyledButton>
+    </li>
+  );
+}
+Menus.Menu = Menu;
+Menus.Toggle = Toggle;
+Menus.List = List;
+Menus.Button = Button;
+
+export default Menus;

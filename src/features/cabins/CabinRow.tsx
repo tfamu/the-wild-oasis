@@ -8,6 +8,7 @@ import { useCreateCabin } from "../../hooks/cabins/useCreateCabin";
 import Modal from "../../ui/Modal";
 import ConfirmDelete from "../../ui/ConfirmDelete";
 import Table from "../../ui/Table";
+import Menus from "../../ui/Menus";
 
 // const TableRow = styled.div`
 //   display: grid;
@@ -89,7 +90,8 @@ const CabinRow = ({ cabin }: CabinRowProps) => {
         <span>&mdash;</span>
       )}
       <div>
-        <button disabled={isCreating} onClick={handleDuplicate}>
+        {/* old code without compound component */}
+        {/* <button disabled={isCreating} onClick={handleDuplicate}>
           <HiSquare2Stack />
         </button>
 
@@ -115,6 +117,39 @@ const CabinRow = ({ cabin }: CabinRowProps) => {
               onConfirm={() => mutateDeleteCabin(cabinId!)}
             />
           </Modal.Window>
+        </Modal> */}
+
+        <Modal>
+          {/* this is the menu of manipulation item, implement with compound component */}
+          <Menus.Menu>
+            <Menus.Toggle id={cabinId?.toString()} />
+
+            <Menus.List id={cabinId?.toString()}>
+              <Menus.Button icon={<HiSquare2Stack />} onClick={handleDuplicate}>
+                Duplicate
+              </Menus.Button>
+
+              <Modal.Open opens="edit-cabin-form">
+                <Menus.Button icon={<HiPencil />}>Edit</Menus.Button>
+              </Modal.Open>
+
+              <Modal.Open opens="delete">
+                <Menus.Button icon={<HiTrash />}>Delete</Menus.Button>
+              </Modal.Open>
+            </Menus.List>
+
+            <Modal.Window name="edit-cabin-form">
+              <CreateCabinForm cabinToEdit={cabin} />
+            </Modal.Window>
+
+            <Modal.Window name="delete">
+              <ConfirmDelete
+                resourceName="cabin"
+                disabled={isDeleting}
+                onConfirm={() => mutateDeleteCabin(cabinId!)}
+              />
+            </Modal.Window>
+          </Menus.Menu>
         </Modal>
       </div>
     </Table.Row>

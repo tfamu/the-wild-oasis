@@ -113,7 +113,7 @@ const Window = ({ children, name }: WindowProps) => {
   if (!context) throw new Error("Modal.Window must be used within Modal");
   const { openName, close: closeModal } = context;
 
-  const { styledModalref } = useOutsideClick(closeModal);
+  const { styledModalref } = useOutsideClick<HTMLDivElement>(closeModal);
 
   if (name !== openName) return null;
 
