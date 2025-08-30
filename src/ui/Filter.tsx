@@ -1,4 +1,6 @@
+import { useSearchParams } from "react-router";
 import styled, { css } from "styled-components";
+import type { OperationOptionProp } from "../types/opsOptions";
 
 const StyledFilter = styled.div`
   border: 1px solid var(--color-grey-100);
@@ -10,7 +12,7 @@ const StyledFilter = styled.div`
   gap: 0.4rem;
 `;
 
-const FilterButton = styled.button`
+const FilterButton = styled.button<{ active?: boolean }>`
   background-color: var(--color-grey-0);
   border: none;
 
@@ -33,3 +35,41 @@ const FilterButton = styled.button`
     color: var(--color-brand-50);
   }
 `;
+
+interface FilterProps {
+  filterField: string;
+  options?: OperationOptionProp[];
+}
+
+const Filter = ({ filterField, options }: FilterProps) => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentFilter = searchParams.get(filterField) || options?.at(0)?.value;
+  const handleClick = (value: string) => {
+    searchParams.set(filterField, value);
+    setSearchParams(searchParams);
+  };
+
+  return (
+    <StyledFilter>
+      {options?.map((option) => (
+        <FilterButton
+          onClick={() => handleClick(option.value)}
+          key={option.value}
+          active={option.value === currentFilter}
+        >
+          {option.label}
+        </FilterButton>
+      ))}
+
+      {/* <FilterButton onClick={() => handleClick("all")}>All</FilterButton>
+      <FilterButton onClick={() => handleClick("no-discount")}>
+        No Discount
+      </FilterButton>
+      <FilterButton onClick={() => handleClick("with-discount")}>
+        With Discount
+      </FilterButton> */}
+    </StyledFilter>
+  );
+};
+
+export default Filter;

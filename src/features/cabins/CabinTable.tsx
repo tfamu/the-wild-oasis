@@ -4,6 +4,8 @@ import { useCabins } from "../../hooks/cabins/useCabins";
 import Table from "../../ui/Table";
 import type { cabin } from "../../types/cabin";
 import Menus from "../../ui/Menus";
+import { useSearchParams } from "react-router";
+import { TwoConstants } from "../../constants/twoConstants";
 
 // const TableHeader = styled.header`
 //   display: grid;
@@ -22,8 +24,52 @@ import Menus from "../../ui/Menus";
 
 const CabinTable = () => {
   const { isLoading, cabins } = useCabins();
+  const [searchParams] = useSearchParams();
 
   if (isLoading) return <Spinner />;
+
+  const filterValue = searchParams.get("discount") || "all";
+
+  // filter
+  let filteredCabins;
+  if (filterValue === TwoConstants.CABIN_SEARCH_OP.ALL.value) {
+    filteredCabins = cabins;
+  }
+  if (filterValue === TwoConstants.CABIN_SEARCH_OP.NO_DISCOUNT.value) {
+    filteredCabins = cabins?.filter((cabin) => cabin.discount === 0);
+  }
+  if (filterValue === TwoConstants.CABIN_SEARCH_OP.WITH_DISCOUNT.value) {
+    filteredCabins = cabins?.filter(
+      (cabin) => cabin.discount && cabin.discount > 0
+    );
+  }
+
+  // sort
+  const sortBy = searchParams.get("sortBy") || "startDate-asc";
+  const [field, direction] = sortBy.split("-");
+  const modifier = direction === "asc" ? 1 : -1;
+
+  // sortable key
+  const sortableFields: (keyof cabin)[] = [
+    "regularPrice",
+    "discount",
+    "maxCapacity",
+    "name",
+  ];
+  const isSortableField = (f: string): f is keyof cabin =>
+    sortableFields.includes(f as keyof cabin);
+
+  const sortedCabins = filteredCabins?.sort((a, b) => {
+    if (isSortableField(field)) {
+      if (typeof a[field] === "string") {
+        return (
+          (a[field] as string).localeCompare(b[field] as string) * modifier
+        );
+      }
+      return ((a[field] as number) - (b[field] as number)) * modifier;
+    }
+    return 0;
+  });
 
   return (
     <Menus>
@@ -37,7 +83,9 @@ const CabinTable = () => {
           <div></div>
         </Table.Header>
         <Table.Body
-          data={cabins}
+          // data={cabins}
+          // data={filteredCabins}
+          data={sortedCabins}
           render={(cabin: cabin) => <CabinRow cabin={cabin} key={cabin.id} />}
         />
       </Table>

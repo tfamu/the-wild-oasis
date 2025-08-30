@@ -1,6 +1,7 @@
 import styled from "styled-components";
+import type { OperationOptionProp } from "../types/opsOptions";
 
-const StyledSelect = styled.select`
+const StyledSelect = styled.select<{ type?: string }>`
   font-size: 1.4rem;
   padding: 0.8rem 1.2rem;
   border: 1px solid
@@ -13,3 +14,25 @@ const StyledSelect = styled.select`
   font-weight: 500;
   box-shadow: var(--shadow-sm);
 `;
+
+interface SelectProps {
+  options: OperationOptionProp[];
+  value?: string;
+  type?: string;
+  onChange?: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+}
+
+const Select = ({ options, value, onChange, ...props }: SelectProps) => {
+  return (
+    <StyledSelect value={value} onChange={onChange} type={props.type}>
+      {options.map((option) => (
+        <option value={option.value} key={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </StyledSelect>
+  );
+};
+
+export default Select;
+
