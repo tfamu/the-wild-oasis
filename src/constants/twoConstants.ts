@@ -2,6 +2,7 @@ export const TwoConstants = {
   QUERIES_KEY: {
     CABIN: "cabin",
     SETTING: "setting",
+    BOOKING: "booking",
   },
 
   CABIN_SEARCH_OP: {

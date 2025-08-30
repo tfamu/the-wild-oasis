@@ -1,7 +1,12 @@
 import supabase from "./supabase";
 
-export async function getAll<T>(modelName: string): Promise<T[]> {
-  const { data, error } = await supabase.from(modelName).select("*");
+export async function getAll<T>(
+  modelName: string,
+  queryStr?: string
+): Promise<T[]> {
+  const { data, error } = await supabase
+    .from(modelName)
+    .select(queryStr || "*");
   if (error) {
     const errMsg = `${modelName}s could not be loaded`;
     console.error(errMsg);

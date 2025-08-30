@@ -1,5 +1,16 @@
+import type { booking } from "../types/booking";
 import { getToday } from "../utils/helpers";
+import { getAll } from "./apiCore";
 import supabase from "./supabase";
+
+const MODEL_NAME = "booking";
+
+export async function getBookings() {
+  return getAll<booking>(
+    MODEL_NAME,
+    "id, created_at, startDate, endDate, numNights, numGuests, totalPrice, status, cabin(name), guest(fullName, email)"
+  );
+}
 
 export async function getBooking(id) {
   const { data, error } = await supabase

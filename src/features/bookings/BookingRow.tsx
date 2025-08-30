@@ -6,6 +6,7 @@ import Table from "../../ui/Table";
 
 import { formatCurrency } from "../../utils/helpers";
 import { formatDistanceFromNow } from "../../utils/helpers";
+import type { booking } from "../../types/booking";
 
 const Cabin = styled.div`
   font-size: 1.6rem;
@@ -34,6 +35,10 @@ const Amount = styled.div`
   font-weight: 500;
 `;
 
+interface BookingRowProps {
+  booking: booking;
+}
+
 function BookingRow({
   booking: {
     id: bookingId,
@@ -44,10 +49,10 @@ function BookingRow({
     numGuests,
     totalPrice,
     status,
-    guests: { fullName: guestName, email },
-    cabins: { name: cabinName },
+    guest,
+    cabin,
   },
-}) {
+}: BookingRowProps) {
   const statusToTagName = {
     unconfirmed: "blue",
     "checked-in": "green",
@@ -56,11 +61,11 @@ function BookingRow({
 
   return (
     <Table.Row>
-      <Cabin>{cabinName}</Cabin>
+      <Cabin>{cabin?.name}</Cabin>
 
       <Stacked>
-        <span>{guestName}</span>
-        <span>{email}</span>
+        <span>{guest?.fullName}</span>
+        <span>{guest?.email}</span>
       </Stacked>
 
       <Stacked>
