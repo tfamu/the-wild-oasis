@@ -1,4 +1,9 @@
+import { createContext, useContext, type ReactNode } from "react";
 import styled from "styled-components";
+
+interface CommonRowProps {
+  columns?: string;
+}
 
 const StyledTable = styled.div`
   border: 1px solid var(--color-grey-200);
@@ -9,7 +14,7 @@ const StyledTable = styled.div`
   overflow: hidden;
 `;
 
-const CommonRow = styled.div`
+const CommonRow = styled.div<CommonRowProps>`
   display: grid;
   grid-template-columns: ${(props) => props.columns};
   column-gap: 2.4rem;
@@ -59,8 +64,67 @@ const Empty = styled.p`
   margin: 2.4rem;
 `;
 
-const Table = () => {
-
+interface TableContextType {
+  columns?: string;
+  children?: ReactNode;
 }
+
+interface HeaderProps {
+  children: ReactNode;
+}
+
+interface RowProps {
+  children: ReactNode;
+}
+
+const TableContext = createContext<TableContextType>({});
+
+const Table = ({ columns, children }: TableContextType) => {
+  return (
+    <TableContext.Provider value={{ columns }}>
+      <StyledTable role="table">{children}</StyledTable>
+    </TableContext.Provider>
+  );
+};
+
+const Header = ({ children }: HeaderProps) => {
+  const { columns } = useContext(TableContext);
+  return (
+    <StyledHeader role="row" columns={columns} as="header">
+      {children}
+    </StyledHeader>
+  );
+};
+
+const Row = ({ children }: RowProps) => {
+  const { columns } = useContext(TableContext);
+  return (
+    <StyledRow role="row" columns={columns}>
+      {children}
+    </StyledRow>
+  );
+};
+
+interface BodyProps<T> {
+  data?: T[];
+  render: (data: T) => ReactNode;
+}
+
+const Body = <T,>({ data, render }: BodyProps<T>) => {
+  if (!data || !data.length)
+    return <Empty>No data to show at the moment</Empty>;
+  return <StyledBody>{data.map(render)}</StyledBody>;
+};
+
+// this is funtion syntax for using generic without T,
+// function Body<T>({ data, render }: BodyProps<T>) {
+//   if (!data) return <div>No data</div>;
+//   return <StyledBody>{data.map(render)}</StyledBody>;
+// }
+
+Table.Header = Header;
+Table.Row = Row;
+Table.Body = Body;
+Table.Footer = Footer;
 
 export default Table;
