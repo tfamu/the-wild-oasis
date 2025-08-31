@@ -5,12 +5,36 @@ import supabase from "./supabase";
 
 const MODEL_NAME = "booking";
 
-export async function getBookings() {
-  return getAll<booking>(
-    MODEL_NAME,
-    "id, created_at, startDate, endDate, numNights, numGuests, totalPrice, status, cabin(name), guest(fullName, email)"
-  );
+export async function getBookings({ filter, sortBy }) {
+  let query = supabase
+    .from(MODEL_NAME)
+    .select(
+      "id, created_at, startDate, endDate, numNights, numGuests, totalPrice, status, cabin(name), guest(fullName, email)"
+    )
+
+  if (filter) {
+    query = query[filter.method || "eq"](filter.field, filter.value)
+  }
+
+  if (sortBy) {
+    query = query.order(sortBy.field, ascending: sortBy.direction === 'asc')
+  }
+
+  cosnt { data, error } = await query
+
+  if (error) {
+    console.error(error);
+    throw new Error("Bookings could not be loaded")
+  }
 }
+
+// for refractoring later...
+// export async function getBookings({ filter, sortBy }) {
+//   return getAll<booking>(
+//     MODEL_NAME,
+//     "id, created_at, startDate, endDate, numNights, numGuests, totalPrice, status, cabin(name), guest(fullName, email)"
+//   );
+// }
 
 export async function getBooking(id) {
   const { data, error } = await supabase
