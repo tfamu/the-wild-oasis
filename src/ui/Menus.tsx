@@ -98,6 +98,7 @@ function Toggle({ id }: { id?: string }) {
   const { openId, close, open, setPosition } = context;
 
   const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     const rect = (e.target as Element)
       .closest("button")!
       .getBoundingClientRect();
@@ -122,7 +123,7 @@ function List({ id, children }: { id?: string; children: ReactNode }) {
   const context = useContext(MenusContext);
   if (!context) throw new Error("Menus.List must be used within Modal");
   const { openId, position, close } = context;
-  const { styledModalref } = useOutsideClick<HTMLUListElement>(close);
+  const { styledModalref } = useOutsideClick<HTMLUListElement>(close, false);
 
   if (openId !== id) return null;
 
