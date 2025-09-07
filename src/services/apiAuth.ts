@@ -50,3 +50,35 @@ export async function logout() {
     const {error} = await supabase.auth.signOut()
     if (error) throw new Error(error.message)
 }
+
+export async function updateCurrentUser({ password, fullName, avatar }) {
+  let updateData;
+  if (password) updateData = { password };
+  if (fullName) updateData = { data: { fullName } };
+  const { data, error } = await supabase.auth.updateUser(updateData);
+
+  if (error) throw new Error(error.message);
+
+  if (!avatar) return data;
+
+  const fileName = `avatar-${data.user.id}-${Math.random()}`;
+
+  const { error: storageError } = await supabase.storage
+    .from("avatars")
+    .upload(fileName, avatar);
+
+  if (storageError) throw new Error(storageError.message);
+
+  const { data: updateUser, error: updateUserErr } =
+    await supabase.auth.updateUser({
+      data: {
+        avatar: `${
+          import.meta.env.VITE_SUPABASE_URL
+        }/storage/v1/object/public/avatars/${fileName}`,
+      },
+    });
+
+  if (updateUserErr) throw new Error(updateUserErr.message);
+
+  return updateUser;
+}
