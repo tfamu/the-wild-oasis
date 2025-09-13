@@ -11,6 +11,7 @@ import DataItem from "../../ui/DataItem";
 import { Flag } from "../../ui/Flag";
 
 import { formatDistanceFromNow, formatCurrency } from "../../utils/helpers";
+import type { booking } from "../../types/booking";
 
 const StyledBookingDataBox = styled.section`
   /* Box */
@@ -68,7 +69,7 @@ const Guest = styled.div`
   }
 `;
 
-const Price = styled.div`
+const Price = styled.div<{ isPaid?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -102,7 +103,7 @@ const Footer = styled.footer`
 `;
 
 // A purely presentational component
-function BookingDataBox({ booking }) {
+function BookingDataBox({ booking }: { booking: booking }) {
   const {
     created_at,
     startDate,
@@ -115,9 +116,19 @@ function BookingDataBox({ booking }) {
     hasBreakfast,
     observations,
     isPaid,
-    guests: { fullName: guestName, email, country, countryFlag, nationalID },
-    cabins: { name: cabinName },
+    guest,
+    cabin,
   } = booking;
+
+  const {
+    fullName: guestName,
+    email,
+    country,
+    countryFlag,
+    nationalID,
+  } = guest ?? {};
+
+  const { name: cabinName } = cabin ?? {};
 
   return (
     <StyledBookingDataBox>

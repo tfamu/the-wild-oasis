@@ -31,4 +31,32 @@ export const TwoConstants = {
       label: "Sort by capacity (high first)",
     },
   },
+
+  BOOKING_SEARCH_OP: {
+    ALL: { value: "all", label: "All" },
+    CHECKED_OUT: { value: "checked-out", label: "Checked out" },
+    CHECKED_IN: { value: "checked-in", label: "Checked in" },
+    UNCONFIRMED: { value: "unconfirmed", label: "Unconfirmed" },
+  },
+
+  BOOKING_SORT_OP: {
+    START_DATE_DESC: {
+      value: "startDate-desc",
+      label: "Sort by date (recent first)",
+    },
+    START_DATE_ASC: {
+      value: "startDate-asc",
+      label: "Sort by date (earlier first)",
+    },
+    TOTAL_PRICE_DESC: {
+      value: "totalPrice-desc",
+      label: "Sort by amount (high first)",
+    },
+    TOTAL_PRICE_ASC: {
+      value: "totalPrice-asc",
+      label: "Sort by amount (low first)",
+    },
+  },
+
+  PAGE_SIZE: 10,
 };

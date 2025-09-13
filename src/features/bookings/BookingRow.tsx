@@ -1,9 +1,7 @@
 import styled from "styled-components";
 import { format, isToday } from "date-fns";
-
 import Tag from "../../ui/Tag";
 import Table from "../../ui/Table";
-
 import { formatCurrency } from "../../utils/helpers";
 import { formatDistanceFromNow } from "../../utils/helpers";
 import type { booking } from "../../types/booking";
@@ -19,6 +17,7 @@ import { useCheckout } from "../../hooks/checkout/useCheckout";
 import Modal from "../../ui/Modal";
 import ConfirmDelete from "../../ui/ConfirmDelete";
 import { useDeleteBooking } from "../../hooks/bookings/useDeleteBooking";
+import type { BookingStatus } from "../../types/bookingStatus";
 
 const Cabin = styled.div`
   font-size: 1.6rem;
@@ -54,11 +53,9 @@ interface BookingRowProps {
 function BookingRow({
   booking: {
     id: bookingId,
-    created_at,
     startDate,
     endDate,
     numNights,
-    numGuests,
     totalPrice,
     status,
     guest,
@@ -68,7 +65,9 @@ function BookingRow({
   const navigate = useNavigate();
   const { checkout, isCheckingOut } = useCheckout();
   const { deleteBooking, isDeleting } = useDeleteBooking();
-  const statusToTagName = {
+
+  const currentBookingStatus = status as BookingStatus;
+  const statusToTagName: Record<BookingStatus, string> = {
     unconfirmed: "blue",
     "checked-in": "green",
     "checked-out": "silver",
@@ -97,7 +96,9 @@ function BookingRow({
           </span>
         </Stacked>
 
-        <Tag type={statusToTagName[status]}>{status.replace("-", " ")}</Tag>
+        <Tag type={statusToTagName[currentBookingStatus]}>
+          {currentBookingStatus.replace("-", " ")}
+        </Tag>
 
         <Amount>{formatCurrency(totalPrice)}</Amount>
 

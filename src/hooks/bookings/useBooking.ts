@@ -1,21 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
-import type { cabin } from "../../types/cabin";
 import { getBooking } from "../../services/apiBookings";
 import { useParams } from "react-router";
+import type { booking } from "../../types/booking";
 
 // queryKey is using to identify query, save to cache
 // queryFn is using for async function
 export function useBooking() {
-  const { bookingId } = useParams()
-    const {
-        data: booking,
-        isLoading,
-        error,
-    } = useQuery<cabin[]>({
+  const { bookingId } = useParams();
+  const {
+    data: booking,
+    isLoading,
+    error,
+  } = useQuery<booking>({
     queryKey: ["booking", bookingId],
-    queryFn: () => getBooking(bookingId),
-    retry: false
+    queryFn: () => getBooking(Number(bookingId)),
+    retry: false,
   });
 
-    return { booking, isLoading, error }
+  return { booking, isLoading, error };
 }

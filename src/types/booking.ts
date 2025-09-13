@@ -17,6 +17,8 @@ export interface booking {
   status: string | number;
   guest?: guest;
   cabin?: cabin;
+  cabinPrice?: number;
+  extrasPrice?: number;
 }
 
 // id: bookingId,

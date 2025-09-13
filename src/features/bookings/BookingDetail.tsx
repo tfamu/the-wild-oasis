@@ -17,6 +17,7 @@ import Modal from "../../ui/Modal";
 import ConfirmDelete from "../../ui/ConfirmDelete";
 import { useDeleteBooking } from "../../hooks/bookings/useDeleteBooking";
 import Empty from "../../ui/Empty";
+import type { BookingStatus } from "../../types/bookingStatus";
 
 const HeadingGroup = styled.div`
   display: flex;
@@ -35,9 +36,12 @@ function BookingDetail() {
   if (isLoading) return <Spinner />;
   if (!booking) return <Empty resourceName="booking" />;
 
-  const { status, id: bookingId } = booking;
+  const { status, id: bookingId } = booking as {
+    status: BookingStatus;
+    id: number;
+  };
 
-  const statusToTagName = {
+  const statusToTagName: Record<BookingStatus, string> = {
     unconfirmed: "blue",
     "checked-in": "green",
     "checked-out": "silver",

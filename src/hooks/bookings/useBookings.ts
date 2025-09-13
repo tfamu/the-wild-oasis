@@ -1,14 +1,16 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import type { booking } from "../../types/booking";
 import { TwoConstants } from "../../constants/twoConstants";
 import { getBookings } from "../../services/apiBookings";
 import { useSearchParams } from "react-router";
+import type { BookingStatus } from "../../types/bookingStatus";
 
 export const useBookings = () => {
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
 
-  const filterVal = searchParams.get("status");
+  type BookingStatusForFilter = "all" | BookingStatus;
+
+  const filterVal = searchParams.get("status") as BookingStatusForFilter;
   const filter =
     !filterVal || filterVal === "all"
       ? null
@@ -18,19 +20,19 @@ export const useBookings = () => {
   const [field, direction] = sortByRaw.split("-");
   const sortBy = { field, direction };
 
-  const page = !searchParams.get("page" ? 1 : Number(searchParams.get("page")));
+  const page = !searchParams.get("page") ? 1 : Number(searchParams.get("page"));
 
   const {
     data: { data: bookings, count } = {},
     isError,
     isLoading,
-  } = useQuery<booking[]>({
+  } = useQuery({
     queryKey: [TwoConstants.QUERIES_KEY.BOOKING, filter, sortBy, page],
     queryFn: () => getBookings({ filter, sortBy, page }),
   });
 
   // PRE FETCHING
-  const pageCount = Math.ceil(count / 10);
+  const pageCount = Math.ceil(count ? count / 10 : 0);
   if (page < pageCount) {
     queryClient.prefetchQuery({
       queryKey: [TwoConstants.QUERIES_KEY.BOOKING, filter, sortBy, page + 1],
@@ -44,5 +46,5 @@ export const useBookings = () => {
     });
   }
 
-  return { bookings, isError, isLoading };
+  return { bookings, isError, isLoading, count };
 };

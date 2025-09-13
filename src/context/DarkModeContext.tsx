@@ -1,9 +1,13 @@
-import { createContext, useContext, useEffect } from "react";
+import { createContext, useContext, useEffect, type ReactNode } from "react";
 import { useLocalStorageState } from "../hooks/useLocalStorageState";
 
-const DarkModeContext = createContext(null);
+interface DarkModeContextProp {
+  isDarkMode?: boolean;
+  toggleDarkMode?: () => void;
+}
+const DarkModeContext = createContext<DarkModeContextProp>({});
 
-function DarkModeProvider({ children }) {
+function DarkModeProvider({ children }: { children: ReactNode }) {
   // matching browser darkmode
   const [isDarkMode, setIsDarkMode] = useLocalStorageState(
     window.matchMedia("(prefers-color-scheme: dark)").matches,
@@ -12,8 +16,12 @@ function DarkModeProvider({ children }) {
 
   useEffect(
     function () {
-      document.documentElement.classList.add(isDarkMode ? "dark-mode" : "light-mode")
-      document.documentElement.classList.remove(isDarkMode ? "light-mode" : "dark-mode")
+      document.documentElement.classList.add(
+        isDarkMode ? "dark-mode" : "light-mode"
+      );
+      document.documentElement.classList.remove(
+        isDarkMode ? "light-mode" : "dark-mode"
+      );
       // if (isDarkMode) {
       //   document.documentElement.classList.add("dark-mode");
       //   document.documentElement.classList.remove("light-mode");
@@ -26,7 +34,7 @@ function DarkModeProvider({ children }) {
   );
 
   function toggleDarkMode() {
-    setIsDarkMode((isDark) => !isDark);
+    setIsDarkMode((isDark: boolean) => !isDark);
   }
 
   return (
@@ -43,4 +51,5 @@ function useDarkMode() {
   return context;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export { DarkModeProvider, useDarkMode };

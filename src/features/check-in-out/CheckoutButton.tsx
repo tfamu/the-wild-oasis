@@ -1,7 +1,7 @@
 import { useCheckout } from "../../hooks/checkout/useCheckout";
 import Button from "../../ui/Button";
 
-function CheckoutButton({ bookingId }) {
+function CheckoutButton({ bookingId }: { bookingId: number }) {
   const { checkout, isCheckingOut } = useCheckout();
 
   return (

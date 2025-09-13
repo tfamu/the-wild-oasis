@@ -5,4 +5,5 @@ export interface guest {
   nationality?: string;
   nationalID?: string;
   countryFlag?: string;
+  country?: string;
 }

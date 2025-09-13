@@ -30,13 +30,16 @@ export const getToday = function (options: GetTodayOptions = {}) {
   return today.toISOString();
 };
 
-export const formatCurrency = (value: number) =>
-  new Intl.NumberFormat("en", { style: "currency", currency: "USD" }).format(
-    value
-  );
+export const formatCurrency = (value?: number) => {
+  if (!value) return "0円";
+  return new Intl.NumberFormat("ja-JP", {
+    style: "currency",
+    currency: "JPY",
+  }).format(value);
+};
 
 export const formatJPY = (value?: number): string => {
-  if (!value) return "";
+  if (!value) return "0円";
   return new Intl.NumberFormat("ja-JP", {
     style: "currency",
     currency: "JPY",

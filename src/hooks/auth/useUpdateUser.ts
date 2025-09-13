@@ -4,19 +4,20 @@ import { updateCurrentUser } from "../../services/apiAuth";
 
 export function useUpdateUser() {
     const queryClient = useQueryClient();
-    const { mutate: mutateUpdateCurrentUser, isPending: isUpdating } = useMutation({
-    mutationFn: updateCurrentUser,
-    onSuccess: ({user}) => {
-      toast.success("User account successfully Updated");
-      queryClient.setQueryData(['user'], user)
-      queryClient.invalidateQueries({
-        queryKey: ["user"],
+    const { mutate: mutateUpdateCurrentUser, isPending: isUpdating } =
+      useMutation({
+        mutationFn: updateCurrentUser,
+        onSuccess: ({ user }) => {
+          toast.success("User account successfully Updated");
+          queryClient.setQueryData(["user"], user);
+          queryClient.invalidateQueries({
+            queryKey: ["user"],
+          });
+        },
+        onError: (err) => {
+          toast.error(err.message);
+        },
       });
-    },
-    onError: (err) => {
-      toast.error(err.message);
-    },
-  });
 
   return { isUpdating, mutateUpdateCurrentUser }
 }

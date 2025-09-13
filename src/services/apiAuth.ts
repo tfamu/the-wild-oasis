@@ -1,6 +1,12 @@
+import type { UserInfo } from "../types/userInfo";
 import supabase from "./supabase";
 
-export async function signup({ fullName, email, password }) {
+interface SigningInfo {
+  fullName: string;
+  email: string;
+  password: string;
+}
+export async function signup({ fullName, email, password }: SigningInfo) {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -17,16 +23,13 @@ export async function signup({ fullName, email, password }) {
   return data;
 }
 
-export async function login({
-  email,
-  password,
-}: {
-  email: string;
-  password: string;
-}) {
+export async function login({ email, password }: UserInfo) {
+  if (!email || !password) {
+    console.error("No email or password");
+  }
   const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
+    email: email ?? "",
+    password: password ?? "",
   });
   if (error) throw new Error(error.message);
 
@@ -41,21 +44,30 @@ export async function getCurrentUser() {
   if (!session.session) return null;
   const { data, error } = await supabase.auth.getUser();
 
+  if (error) throw new Error(error.message);
+
   console.log(data);
 
   return data?.user;
 }
 
 export async function logout() {
-    const {error} = await supabase.auth.signOut()
-    if (error) throw new Error(error.message)
+  const { error } = await supabase.auth.signOut();
+  if (error) throw new Error(error.message);
 }
 
-export async function updateCurrentUser({ password, fullName, avatar }) {
+export async function updateCurrentUser({
+  password,
+  fullName,
+  avatar,
+}: UserInfo) {
   let updateData;
   if (password) updateData = { password };
   if (fullName) updateData = { data: { fullName } };
-  const { data, error } = await supabase.auth.updateUser(updateData);
+  if (!updateData) {
+    console.error("no updated data");
+  }
+  const { data, error } = await supabase.auth.updateUser(updateData!);
 
   if (error) throw new Error(error.message);
 

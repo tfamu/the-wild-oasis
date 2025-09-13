@@ -12,7 +12,7 @@ function LoginForm() {
 
   const { login, isLoading } = useLogin();
 
-  function handleSubmit(e) {
+  const handleSubmit: React.FormEventHandler = (e) => {
     e.preventDefault();
     if (!email || !password) return;
 
@@ -25,7 +25,7 @@ function LoginForm() {
         },
       }
     );
-  }
+  };
 
   return (
     <Form onSubmit={handleSubmit}>

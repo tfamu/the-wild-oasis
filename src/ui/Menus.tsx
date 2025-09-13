@@ -92,7 +92,7 @@ const Menus = ({ children }: { children: ReactNode }) => {
   );
 };
 
-function Toggle({ id }: { id?: string }) {
+function Toggle({ id }: { id?: string | number }) {
   const context = useContext(MenusContext);
   if (!context) throw new Error("Menus.Toggle must be used within Modal");
   const { openId, close, open, setPosition } = context;
@@ -107,7 +107,7 @@ function Toggle({ id }: { id?: string }) {
       y: rect.y + rect.height + 8,
     });
     if (openId === "" || openId !== id) {
-      open?.(id || "");
+      open?.(id?.toString() || "");
     } else {
       close?.();
     }
@@ -119,7 +119,7 @@ function Toggle({ id }: { id?: string }) {
     </StyledToggle>
   );
 }
-function List({ id, children }: { id?: string; children: ReactNode }) {
+function List({ id, children }: { id?: string | number; children: ReactNode }) {
   const context = useContext(MenusContext);
   if (!context) throw new Error("Menus.List must be used within Modal");
   const { openId, position, close } = context;
@@ -138,10 +138,11 @@ function List({ id, children }: { id?: string; children: ReactNode }) {
 interface ButtonProps {
   children: ReactNode;
   icon: ReactNode;
+  disabled?: boolean;
   onClick?: () => void;
 }
 
-function Button({ children, icon, onClick }: ButtonProps) {
+function Button({ children, icon, disabled, onClick }: ButtonProps) {
   const context = useContext(MenusContext);
   if (!context) throw new Error("Menus.Button must be used within Modal");
   const { close } = context;
@@ -152,7 +153,7 @@ function Button({ children, icon, onClick }: ButtonProps) {
   };
   return (
     <li>
-      <StyledButton onClick={handleClick}>
+      <StyledButton onClick={handleClick} disabled={disabled}>
         {icon}
         <span>{children}</span>
       </StyledButton>

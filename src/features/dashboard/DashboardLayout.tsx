@@ -26,12 +26,12 @@ const DashboardLayout = () => {
     <StyledDashboardLayout>
       <Stats
         bookings={bookings}
-        confirmedStays={confirmedStays}
+        confirmedStays={confirmedStays ?? []}
         numDays={numDays}
-        cabinCount={cabins.length}
+        cabinCount={cabins?.length ?? 0}
       />
       <TodayActivity />
-      <DurationChart confirmedStays={confirmedStays} />
+      <DurationChart confirmedStays={confirmedStays ?? []} />
       <SalesChart bookings={bookings} numDays={numDays} />
     </StyledDashboardLayout>
   );

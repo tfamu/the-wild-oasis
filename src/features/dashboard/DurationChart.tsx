@@ -9,6 +9,7 @@ import {
 import styled from "styled-components";
 import Heading from "../../ui/Heading";
 import { useDarkMode } from "../../context/DarkModeContext";
+import type { booking } from "../../types/booking";
 
 const ChartBox = styled.div`
   /* Box */
@@ -27,6 +28,12 @@ const ChartBox = styled.div`
     font-weight: 600;
   }
 `;
+
+interface DurationProps {
+  duration: string;
+  value: number;
+  color: string;
+}
 
 const startDataLight = [
   {
@@ -114,10 +121,10 @@ const startDataDark = [
   },
 ];
 
-function prepareData(startData, stays) {
+function prepareData(startData: DurationProps[], stays: booking[]) {
   // A bit ugly code, but sometimes this is what it takes when working with real data 😅
 
-  function incArrayValue(arr, field) {
+  function incArrayValue(arr: DurationProps[], field: string) {
     return arr.map((obj) =>
       obj.duration === field ? { ...obj, value: obj.value + 1 } : obj
     );
@@ -141,7 +148,7 @@ function prepareData(startData, stays) {
   return data;
 }
 
-function DurationChart({ confirmedStays }) {
+function DurationChart({ confirmedStays }: { confirmedStays: booking[] }) {
   const { isDarkMode } = useDarkMode();
   const startData = isDarkMode ? startDataDark : startDataLight;
   const data = prepareData(startData, confirmedStays);
@@ -173,7 +180,7 @@ function DurationChart({ confirmedStays }) {
           <Legend
             verticalAlign="middle"
             align="right"
-            width="30%"
+            width={0.3}
             layout="vertical"
             iconSize={15}
             iconType="circle"

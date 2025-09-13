@@ -10,19 +10,16 @@ import { useUpdateUser } from "../../hooks/auth/useUpdateUser";
 
 function UpdateUserDataForm() {
   // We don't need the loading state, and can immediately use the user data, because we know that it has already been loaded at this point
-  const {
-    user: {
-      email,
-      user_metadata: { fullName: currentFullName },
-    },
-  } = useUser();
+  const { user } = useUser();
+  const email = user?.email ?? "";
+  const currentFullName = user?.user_metadata?.fullName ?? "";
 
   const { mutateUpdateCurrentUser, isUpdating } = useUpdateUser();
 
   const [fullName, setFullName] = useState(currentFullName);
-  const [avatar, setAvatar] = useState(null);
+  const [avatar, setAvatar] = useState<File | null>(null);
 
-  function handleSubmit(e) {
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
     if (!fullName) return;
     mutateUpdateCurrentUser(
@@ -30,11 +27,11 @@ function UpdateUserDataForm() {
       {
         onSuccess: () => {
           setAvatar(null);
-          e.target.reset();
+          (e.target as HTMLFormElement).reset();
         },
       }
     );
-  }
+  };
 
   function handleCancel() {
     setFullName(currentFullName);
@@ -59,20 +56,22 @@ function UpdateUserDataForm() {
         <FileInput
           id="avatar"
           accept="image/*"
-          onChange={(e) => setAvatar(e.target.files[0])}
+          onChange={(e) => setAvatar(e.target.files ? e.target.files[0] : null)}
           disabled={isUpdating}
         />
       </FormRow>
       <FormRow>
-        <Button
-          type="reset"
-          variation="secondary"
-          disabled={isUpdating}
-          onClick={handleCancel}
-        >
-          Cancel
-        </Button>
-        <Button>Update account</Button>
+        <>
+          <Button
+            type="reset"
+            variation="secondary"
+            disabled={isUpdating}
+            onClick={handleCancel}
+          >
+            Cancel
+          </Button>
+          <Button>Update account</Button>
+        </>
       </FormRow>
     </Form>
   );

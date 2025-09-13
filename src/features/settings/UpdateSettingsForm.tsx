@@ -2,7 +2,7 @@ import type React from "react";
 import { TwoConstants } from "../../constants/twoConstants";
 import { useUpdateSetting } from "../../hooks/settings/useUpdateSetting";
 import { useQueryFetchAll } from "../../hooks/useQueryFetchAll";
-import { getSettings } from "../../services/apiSettings";
+import { getSetting } from "../../services/apiSettings";
 import type { setting } from "../../types/setting";
 import Form from "../../ui/Form";
 import FormRow from "../../ui/FormRow";
@@ -18,10 +18,10 @@ type SettingField =
 function UpdateSettingsForm() {
   const { data, isLoading } = useQueryFetchAll<setting>(
     TwoConstants.QUERIES_KEY.SETTING,
-    getSettings
+    getSetting
   );
   const { isUpdating, mutateUpdateSetting } = useUpdateSetting();
-  const settingData = data ? data[0] : {};
+  const settingData = data ?? {};
 
   const handleUpdate = (
     e: React.FocusEvent<HTMLInputElement>,

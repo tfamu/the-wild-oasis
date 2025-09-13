@@ -3,9 +3,9 @@ import { getAll, modifyData } from "./apiCore";
 
 const MODEL_NAME = "setting";
 
-export async function getSettings(): Promise<setting[]> {
+export async function getSetting(): Promise<setting> {
   const settingData = await getAll<setting>(MODEL_NAME);
-  return settingData;
+  return settingData[0];
 }
 
 // We expect a newSetting object that looks like {setting: newValue}

@@ -1,9 +1,10 @@
-import { useForm } from "react-hook-form";
+import { useForm, type SubmitHandler } from "react-hook-form";
 import Button from "../../ui/Button";
 import Form from "../../ui/Form";
 import FormRow from "../../ui/FormRow";
 import Input from "../../ui/Input";
 import { useSignup } from "../../hooks/auth/useSignup";
+import type { UserInfo } from "../../types/userInfo";
 
 // Email regex: /\S+@\S+\.\S+/
 
@@ -12,9 +13,17 @@ function SignupForm() {
   const { errors } = formState;
   const { signup, isSigningUp } = useSignup();
 
-  const onSubmit = ({ fullName, email, password }) => {
+  const onSubmit: SubmitHandler<UserInfo> = ({
+    fullName,
+    email,
+    password,
+  }: UserInfo) => {
     signup(
-      { fullName, email, password },
+      {
+        email: email ?? "",
+        fullName: fullName ?? "",
+        password: password ?? "",
+      },
       {
         onSettled: () => reset(),
       }
@@ -23,7 +32,7 @@ function SignupForm() {
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
-      <FormRow label="Full name" error={errors?.fullName?.message}>
+      <FormRow label="Full name" error={errors?.fullName?.message?.toString()}>
         <Input
           type="text"
           id="fullName"
@@ -32,7 +41,7 @@ function SignupForm() {
         />
       </FormRow>
 
-      <FormRow label="Email address" error={errors?.email?.message}>
+      <FormRow label="Email address" error={errors?.email?.message?.toString()}>
         <Input
           type="email"
           id="email"
@@ -49,7 +58,7 @@ function SignupForm() {
 
       <FormRow
         label="Password (min 8 characters)"
-        error={errors?.password?.message}
+        error={errors?.password?.message?.toString()}
       >
         <Input
           type="password"
@@ -65,7 +74,10 @@ function SignupForm() {
         />
       </FormRow>
 
-      <FormRow label="Repeat password" error={errors?.passwordConfirm?.message}>
+      <FormRow
+        label="Repeat password"
+        error={errors?.passwordConfirm?.message?.toString()}
+      >
         <Input
           type="password"
           id="passwordConfirm"
@@ -78,17 +90,19 @@ function SignupForm() {
         />
       </FormRow>
 
+      {/* type is an HTML attribute! */}
       <FormRow>
-        {/* type is an HTML attribute! */}
-        <Button
-          variation="secondary"
-          type="reset"
-          disabled={isSigningUp}
-          onClick={reset}
-        >
-          Cancel
-        </Button>
-        <Button disabled={isSigningUp}>Create new user</Button>
+        <>
+          <Button
+            variation="secondary"
+            type="reset"
+            disabled={isSigningUp}
+            onClick={reset}
+          >
+            Cancel
+          </Button>
+          <Button disabled={isSigningUp}>Create new user</Button>
+        </>
       </FormRow>
     </Form>
   );

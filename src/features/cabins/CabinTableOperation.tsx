@@ -5,16 +5,15 @@ import TableOperations from "../../ui/TableOperations"
 
 const CabinTableOperation = () => {
     return (
-            <TableOperations>
-                <Filter filterField='discount' options={[
-                    ...Object.values(TwoConstants.CABIN_SEARCH_OP)
-                ]}/>
+      <TableOperations>
+        <Filter
+          filterField="discount"
+          options={[...Object.values(TwoConstants.CABIN_SEARCH_OP)]}
+        />
 
-                <SortBy options={[
-                    ...Object.values(TwoConstants.CABIN_SORT_OP)
-                ]}/>
-            </TableOperations>
-    )
+        <SortBy options={[...Object.values(TwoConstants.CABIN_SORT_OP)]} />
+      </TableOperations>
+    );
 }
 
 export default CabinTableOperation
