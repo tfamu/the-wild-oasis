@@ -46,7 +46,7 @@ function TodayActivity() {
   return (
     <StyledToday>
       <Row type="horizontal">
-        <Heading as="h2">Today</Heading>
+        <Heading as="h2">本日の予約</Heading>
       </Row>
 
       {!isLoading ? (
@@ -57,7 +57,7 @@ function TodayActivity() {
             ))}
           </TodayList>
         ) : (
-          <NoActivity>No activity today...</NoActivity>
+          <NoActivity>予約がありません...</NoActivity>
         )
       ) : (
         <Spinner />
