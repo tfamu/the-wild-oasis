@@ -125,6 +125,7 @@ function SalesChart({ bookings, numDays }: SalesChart) {
           />
           <YAxis
             unit="円"
+            width="auto"
             tick={{ fill: colors.text }}
             tickLine={{ stroke: colors.text }}
           />
@@ -146,7 +147,7 @@ function SalesChart({ bookings, numDays }: SalesChart) {
             fill={colors.extrasSales.fill}
             strokeWidth={2}
             name="Extras sales"
-            unit="$"
+            unit="円"
           />
         </AreaChart>
       </ResponsiveContainer>

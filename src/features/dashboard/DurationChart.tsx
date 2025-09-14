@@ -180,7 +180,6 @@ function DurationChart({ confirmedStays }: { confirmedStays: booking[] }) {
           <Legend
             verticalAlign="middle"
             align="right"
-            width={0.3}
             layout="vertical"
             iconSize={15}
             iconType="circle"

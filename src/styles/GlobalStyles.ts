@@ -95,6 +95,8 @@ const GlobalStyles = createGlobalStyle`
   --border-radius-md: 7px;
   --border-radius-lg: 9px;
 
+  --color-red-800: #991b1b;
+
 
 }
 

@@ -103,8 +103,8 @@ function BookingRow({
         <Amount>{formatCurrency(totalPrice)}</Amount>
 
         <Menus.Menu>
-          <Menus.Toggle id={bookingId} />
-          <Menus.List id={bookingId}>
+          <Menus.Toggle id={bookingId?.toString()} />
+          <Menus.List id={bookingId?.toString()}>
             <Menus.Button
               icon={<HiEye />}
               onClick={() => navigate(`/bookings/${bookingId}`)}

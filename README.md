@@ -41,6 +41,10 @@ A comprehensive hotel management application built with React, TypeScript, and V
   - Check-out summaries
   - Restaurant receipts
 
+- 🗾 **Language Transition**
+  - switch between english and japanese
+  - switch currency between english and japanese
+
 ## Tech Stack
 
 - 🎯 **Frontend**
