@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 import HeaderMenu from "./HeaderMenu";
 import UserAvatar from "./UserAvatar";
+import LanguageSelector from "./LanguageSelector";
 
 const StyledHeader = styled.header`
   border-right: 1px solid var(--color-grey-0);
@@ -16,6 +17,7 @@ const StyledHeader = styled.header`
 function Header() {
   return (
     <StyledHeader>
+      <LanguageSelector />
       <UserAvatar />
       <HeaderMenu />
     </StyledHeader>
