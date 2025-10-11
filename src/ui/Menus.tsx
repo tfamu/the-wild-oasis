@@ -33,6 +33,7 @@ interface PositionType {
   x: number;
   y: number;
 }
+
 const StyledList = styled.ul<{ position: PositionType }>`
   position: fixed;
 
@@ -81,6 +82,7 @@ const MenusContext = createContext<MenusContextType | null>(null);
 const Menus = ({ children }: { children: ReactNode }) => {
   const [openId, setOpenId] = useState<string>("");
   const [position, setPosition] = useState<PositionType>({ x: 20, y: 20 });
+
   const close = () => setOpenId("");
   const open = setOpenId;
   return (
@@ -94,7 +96,8 @@ const Menus = ({ children }: { children: ReactNode }) => {
 
 function Toggle({ id }: { id?: string | number }) {
   const context = useContext(MenusContext);
-  if (!context) throw new Error("Menus.Toggle must be used within Modal");
+  if (!context)
+    throw new Error("Menus.Toggle must be used within Menus context");
   const { openId, close, open, setPosition } = context;
 
   const handleClick = (e: React.MouseEvent) => {
@@ -119,9 +122,10 @@ function Toggle({ id }: { id?: string | number }) {
     </StyledToggle>
   );
 }
+
 function List({ id, children }: { id?: string | number; children: ReactNode }) {
   const context = useContext(MenusContext);
-  if (!context) throw new Error("Menus.List must be used within Modal");
+  if (!context) throw new Error("Menus.List must be used within Menus context");
   const { openId, position, close } = context;
   const { styledModalref } = useOutsideClick<HTMLUListElement>(close, false);
 
@@ -144,7 +148,8 @@ interface ButtonProps {
 
 function Button({ children, icon, disabled, onClick }: ButtonProps) {
   const context = useContext(MenusContext);
-  if (!context) throw new Error("Menus.Button must be used within Modal");
+  if (!context)
+    throw new Error("Menus.Button must be used within Menus context");
   const { close } = context;
 
   const handleClick = () => {
